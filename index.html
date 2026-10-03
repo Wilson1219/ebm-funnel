@@ -330,8 +330,8 @@ function drawC(all){
   document.getElementById('cPub').setAttribute('aria-pressed',String(!all));
   document.getElementById('cAll').setAttribute('aria-pressed',String(all));
   document.getElementById('cText').innerHTML=all
-    ?'橘點是<b>存在但未發表</b>的研究。藍點的位置完全沒變，仍然大致對稱。'
-    :'只看已發表的藍點，圖形大致對稱，看不出缺了什麼。切換到「全部研究」看看。';
+    ?'橘點是<b>存在但未發表</b>的研究。綠點的位置完全沒變，仍然大致對稱。'
+    :'只看已發表的綠點，圖形大致對稱，看不出缺了什麼。切換到「全部研究」看看。';
   document.getElementById('cLab').textContent=all?'全部研究合併效果（含未發表）':'已發表研究合併效果';
   document.getElementById('cEst').textContent=fmt(all?allC:pubC);
 }
