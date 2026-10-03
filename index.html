@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>這顆減肥藥，真的有效嗎？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column, each teaching step a numbered section; the funnel plot is the working instrument at the centre. */
+:root{
+  --bg:#F6F9FA; --surface:#FFFFFF; --tint:#E8F1F4; --ink:#17324D; --muted:#5E7184; --rule:#CCD8E0;
+  --teal:#167A91; --rust:#B85426; --rust-tint:#FAEDE6; --ghost:#9FB0BE; --on-accent:#FFFFFF;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1A24; --surface:#152431; --tint:#1B3040; --ink:#E4EDF3; --muted:#9BB0C0; --rule:#2B4252;
+  --teal:#4FB6CC; --rust:#E3825A; --rust-tint:#3A2419; --ghost:#5E7486; --on-accent:#0F1A24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1A24; --surface:#152431; --tint:#1B3040; --ink:#E4EDF3; --muted:#9BB0C0; --rule:#2B4252;
+  --teal:#4FB6CC; --rust:#E3825A; --rust-tint:#3A2419; --ghost:#5E7486; --on-accent:#0F1A24; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;border-radius:4px}
+.eyebrow{font-size:13px;letter-spacing:.08em;color:var(--teal);font-weight:500}
+.num{font-family:var(--f-data);font-variant-numeric:tabular-nums}
+
+/* hero */
+header.hero{padding-top:40px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;border-bottom:1px solid var(--rule);padding-bottom:28px}
+.hero h1{font-size:clamp(30px,5vw,46px);font-weight:900;margin-top:6px}
+.hero .lede{margin-top:12px;color:var(--muted);max-width:36em}
+.byline{text-align:right;font-size:14px;color:var(--muted);line-height:1.6}
+.byline b{color:var(--ink)}
+@media (max-width:640px){header.hero{grid-template-columns:1fr}.byline{text-align:left}}
+
+/* section scaffolding */
+section{display:flex;flex-direction:column;gap:20px}
+.sec-head{display:flex;gap:14px;align-items:baseline}
+.sec-head .step{font-family:var(--f-data);font-weight:600;color:var(--teal);font-size:15px}
+.sec-head h2{font-size:clamp(22px,3vw,28px);font-weight:700}
+.note{font-size:14px;color:var(--muted)}
+
+/* team chips */
+.chips{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.chips{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.chip{background:var(--tint);border:1.5px solid transparent;border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;font:inherit;color:var(--ink);transition:border-color .15s,opacity .2s}
+.chip .n{display:block;font-size:15px}
+.chip .v{display:block;font-family:var(--f-data);font-weight:600;font-size:20px;color:var(--teal)}
+.chip:hover,.chip.sel{border-color:var(--teal)}
+.chip.gone{background:transparent;border:1.5px dashed var(--ghost)}
+.chip.gone .n,.chip.gone .v{color:var(--ghost)}
+
+/* funnel workspace */
+.bench{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;align-items:start}
+@media (max-width:760px){.bench{grid-template-columns:1fr}}
+.plot{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:12px;overflow-x:auto}
+.plot svg{display:block;width:100%;height:auto;min-width:320px}
+.panel{display:flex;flex-direction:column;gap:16px}
+.toggle{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:15px}
+.toggle input{width:18px;height:18px;margin-top:4px;accent-color:var(--rust);flex:none}
+.est{border-top:1px solid var(--rule);padding-top:12px}
+.est .lab{font-size:13px;color:var(--muted)}
+.est .val{font-family:var(--f-data);font-size:30px;font-weight:600;line-height:1.2}
+.est.full .val{color:var(--muted)}
+.est.pub .val{color:var(--rust)}
+.verdict{font-weight:700;min-height:1.7em}
+.readout{background:var(--tint);border-radius:10px;padding:12px 14px;font-size:14px;min-height:88px}
+.readout .who{font-weight:700;font-size:16px}
+
+/* svg marks */
+.axis line,.axis path{stroke:var(--muted);stroke-width:1}
+.axis text,.ptlab{fill:var(--ink);font-size:13px;font-family:var(--f-body)}
+.axis .ttl{fill:var(--muted);font-size:13px}
+.ref-full{stroke:var(--ghost);stroke-width:1.5}
+.ref-pub{stroke:var(--rust);stroke-width:2.5}
+.ref-lab{font-size:12px;font-family:var(--f-data)}
+.ref-lab.full{fill:var(--muted)} .ref-lab.pub{fill:var(--rust)}
+.pt{fill:var(--teal);cursor:pointer}
+.pt.alt{fill:var(--rust)}
+.pt.ghost{fill:none;stroke:var(--ghost);stroke-width:1.5;stroke-dasharray:3 2}
+.pt.sel{stroke:var(--ink);stroke-width:2.5}
+.ptlab.ghost{fill:var(--ghost)}
+
+/* quiz */
+.quiz{display:grid;gap:20px}
+.q{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.q .ask{font-size:clamp(19px,2.6vw,23px);font-weight:700}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btns button{font:inherit;font-weight:700;border-radius:999px;padding:8px 22px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btns button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.reveal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.reveal{grid-template-columns:1fr}}
+.fb{font-weight:700}
+.fb.ok{color:var(--teal)} .fb.no{color:var(--rust)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.seg{align-self:flex-start;display:inline-flex;border:1.5px solid var(--rule);border-radius:999px;overflow:hidden}
+.seg button{font:inherit;font-size:14px;border:0;background:transparent;color:var(--ink);padding:6px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--teal);color:var(--on-accent)}
+
+/* method ladder */
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.ladder{grid-template-columns:1fr 1fr}}
+@media (max-width:440px){.ladder{grid-template-columns:1fr}}
+.rung{background:var(--tint);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.rung.first{background:var(--teal);color:var(--on-accent)}
+.rung .k{font-family:var(--f-data);font-weight:600;font-size:22px;color:var(--teal)}
+.rung.first .k{color:var(--on-accent)}
+.rung h3{font-size:19px}
+.rung ul{margin:0;padding-left:1.1em;font-size:15px}
+.rung .tip{font-size:13px;opacity:.85;border-top:1px solid currentColor;padding-top:8px;margin-top:auto}
+.avoid{background:var(--rust-tint);border-left:4px solid var(--rust);border-radius:6px;padding:12px 16px;font-size:15px}
+.avoid b{color:var(--rust)}
+
+/* close */
+.closing{font-size:clamp(22px,3.2vw,30px);font-weight:900;border-left:4px solid var(--rust);padding-left:18px;line-height:1.5}
+footer{border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">EBM 教學｜發表偏差與漏斗圖</div>
+      <h1>這顆減肥藥，真的有效嗎？</h1>
+      <p class="lede">17 個研究團隊測試同一款減肥藥，對照與追蹤時間相同。每個字母代表一個團隊。問題是：我們看到的研究，完整嗎？</p>
+    </div>
+    <div class="byline"><b>李威成 醫師</b><br>三軍總醫院 牙科部 齒顎矯正科<br><a href="https://weichenglee.blogspot.com/" target="_blank" rel="noopener">矯正部落格</a></div>
+  </header>
+
+  <section aria-labelledby="s1">
+    <div class="sec-head"><span class="step">01</span><h2 id="s1">各團隊的研究結果</h2></div>
+    <p class="note">數值為比對照組多減幾公斤。點一個團隊，可以在下方漏斗圖找到它。</p>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <section aria-labelledby="s2">
+    <div class="sec-head"><span class="step">02</span><h2 id="s2">漏斗圖：每一點是一項研究</h2></div>
+    <p class="note">左右是效果大小；越上方標準誤越小，估計越精確。下方的小型研究結果較分散，沒有選擇性缺漏時，常呈上窄下寬。</p>
+    <div class="bench">
+      <div class="plot"><svg id="main" viewBox="0 0 640 430" role="img" aria-label="17 項研究的漏斗圖"></svg></div>
+      <div class="panel">
+        <label class="toggle"><input type="checkbox" id="hide"><span>只發表「效果明確」的研究<br><span class="note">假設：95% 信賴區間跨過 0 的研究未發表</span></span></label>
+        <label class="toggle"><input type="checkbox" id="ghost" disabled><span>標出未發表研究的位置<br><span class="note">真實文獻看不到這些點</span></span></label>
+        <div class="est full"><div class="lab">完整 17 項的合併效果</div><div class="val num" id="estFull">3.00 kg</div></div>
+        <div class="est pub" id="pubBox" hidden><div class="lab" id="pubLab">已發表研究重新計算</div><div class="val num" id="estPub">—</div></div>
+        <div class="verdict" id="verdict"></div>
+        <div class="readout" id="readout" aria-live="polite">點圖上的點或上方團隊，查看該研究的效果與 95% 信賴區間。</div>
+        <p class="note">合併效果：隨機效應模型（DerSimonian–Laird），每次重新估計研究間變異。</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s3">
+    <div class="sec-head"><span class="step">03</span><h2 id="s3">兩個常見的誤判</h2></div>
+    <div class="quiz">
+      <div class="q" id="q1">
+        <div class="eyebrow">第一題・請先作答</div>
+        <div class="ask">圖形不對稱，就代表有研究沒發表嗎？</div>
+        <div class="btns"><button type="button" data-a="t" aria-pressed="false">對</button><button type="button" data-a="f" aria-pressed="false">錯</button></div>
+        <div class="reveal" hidden>
+          <div class="plot"><svg id="sB" viewBox="0 0 640 430" role="img" aria-label="不對稱但所有研究都已發表的漏斗圖"></svg></div>
+          <div class="panel">
+            <p class="fb"></p>
+            <p><b>另一個情境：所有研究都有發表。</b>較大型研究是減肥藥＋一般照護；較小型研究另外加上密集飲食與運動指導，所以效果偏右。</p>
+            <div class="legend"><span><i style="background:var(--teal)"></i>較大型研究</span><span><i style="background:var(--rust)"></i>較小型研究</span></div>
+            <p>介入不同，效果也可能不同。不對稱還可能來自研究品質、效果指標的特性或機率。<b>不對稱，仍要查原因。</b></p>
+          </div>
+        </div>
+      </div>
+      <div class="q" id="q2">
+        <div class="eyebrow">第二題・請先作答</div>
+        <div class="ask">點位大致對稱，代表研究都已經發表嗎？</div>
+        <div class="btns"><button type="button" data-a="t" aria-pressed="false">對</button><button type="button" data-a="f" aria-pressed="false">錯</button></div>
+        <div class="reveal" hidden>
+          <div class="plot"><svg id="sC" viewBox="0 0 640 430" role="img" aria-label="對稱但仍缺少研究的漏斗圖"></svg></div>
+          <div class="panel">
+            <p class="fb"></p>
+            <div class="seg" role="group" aria-label="切換顯示範圍"><button type="button" id="cPub" aria-pressed="true">只看已發表</button><button type="button" id="cAll" aria-pressed="false">全部研究</button></div>
+            <p id="cText"></p>
+            <div class="est pub"><div class="lab" id="cLab">已發表研究合併效果</div><div class="val num" id="cEst">—</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s4">
+    <div class="sec-head"><span class="step">04</span><h2 id="s4">漏斗圖不對稱，怎麼評估？</h2></div>
+    <p class="note">所有檢定只能顯示「不對稱」，不能單獨證明發表偏差。</p>
+    <div class="ladder">
+      <div class="rung first"><span class="k">0</span><h3>預防</h3><ul><li>試驗登錄平台</li><li>研究計畫書</li><li>灰色文獻</li></ul><p class="tip">最好的對策：事先找回未發表資料</p></div>
+      <div class="rung"><span class="k">1</span><h3>看</h3><ul><li>漏斗圖</li><li>contour-enhanced 版本</li></ul><p class="tip">不對稱也可能來自異質性、品質或機率</p></div>
+      <div class="rung"><span class="k">2</span><h3>檢定</h3><ul><li>Egger</li><li>Harbord／Peters（二元結果）</li></ul><p class="tip">通常需 ≥10 項研究；Begg 檢定力低</p></div>
+      <div class="rung"><span class="k">3</span><h3>敏感度分析</h3><ul><li>剪補法</li><li>選擇模型</li><li>PET-PEESE</li></ul><p class="tip">調整後是假設情境，不是真實效果</p></div>
+    </div>
+    <p class="avoid"><b>不建議</b>　失效安全數（fail-safe N）：只看顯著性，不看效果大小。</p>
+  </section>
+
+  <p class="closing">除了問「效果多好」<br>也要問「哪些研究沒被看見」</p>
+
+  <footer>
+    <span>教學模擬資料：數值與發表情境均為虛構。</span>
+    <span>方法來源：<a href="https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-13" target="_blank" rel="noopener">Cochrane Handbook, Chapter 13</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const L=[['O',0.5,1.25],['M',0.8,1.10],['K',1.1,0.95],['I',1.4,0.80],['G',1.7,0.65],['E',2.0,0.50],['C',2.3,0.35],['A',2.6,0.20]];
+const R=[['P',5.5,1.25],['N',5.2,1.10],['L',4.9,0.95],['J',4.6,0.80],['H',4.3,0.65],['F',4.0,0.50],['D',3.7,0.35],['B',3.4,0.20]];
+const study={};
+L.forEach(([n,y,s])=>study[n]={n,y,s,side:'L'});
+R.forEach(([n,y,s])=>study[n]={n,y,s,side:'R'});
+study['Q']={n:'Q',y:3.0,s:0.10,side:'L'};
+Object.values(study).forEach(d=>{d.lo=d.y-1.96*d.s;d.hi=d.y+1.96*d.s;d.ns=d.lo<=0});
+const order=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q'];
+
+function dl(ys,ss){
+  const v=ss.map(s=>s*s),w=v.map(x=>1/x),sw=w.reduce((a,b)=>a+b,0);
+  const fe=ys.reduce((a,y,i)=>a+w[i]*y,0)/sw;
+  const Q=ys.reduce((a,y,i)=>a+w[i]*(y-fe)**2,0);
+  const C=sw-w.reduce((a,x)=>a+x*x,0)/sw;
+  const t2=Math.max(0,(Q-(ys.length-1))/C);
+  const ws=v.map(x=>1/(x+t2)),sws=ws.reduce((a,b)=>a+b,0);
+  return ys.reduce((a,y,i)=>a+ws[i]*y,0)/sws;
+}
+const fmt=x=>x.toFixed(2)+' kg';
+
+// scale + axes
+const M={l:58,r:20,t:34,b:56},W=640,H=430,X=x=>M.l+x/6*(W-M.l-M.r),Y=s=>M.t+s/1.35*(H-M.t-M.b);
+function el(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e}
+function frame(svg){
+  svg.textContent='';
+  const g=el('g',{class:'axis'},svg);
+  el('line',{x1:X(0),y1:Y(0)-6,x2:X(0),y2:Y(1.35)},g);
+  el('line',{x1:X(0),y1:Y(1.35),x2:X(6),y2:Y(1.35)},g);
+  for(let i=0;i<=6;i++){el('line',{x1:X(i),y1:Y(1.35),x2:X(i),y2:Y(1.35)+5},g);el('text',{x:X(i),y:Y(1.35)+20,'text-anchor':'middle'},g,i)}
+  [0,0.5,1.0].forEach(s=>el('text',{x:X(0)-8,y:Y(s)+4,'text-anchor':'end'},g,s.toFixed(1)));
+  el('text',{x:X(0)-8,y:16,'text-anchor':'end',class:'ttl'},g,'標準誤');
+  el('text',{x:X(3),y:H-10,'text-anchor':'middle',class:'ttl'},g,'比對照組多減的體重（kg）');
+  return svg;
+}
+function refLine(svg,x,cls,label,anchor){
+  el('line',{x1:X(x),y1:Y(0)-6,x2:X(x),y2:Y(1.35),class:cls},svg);
+  el('text',{x:X(x)+(anchor==='end'?-6:6),y:Y(0)-12,'text-anchor':anchor||'start',class:'ref-lab '+(cls==='ref-pub'?'pub':'full')},svg,label);
+}
+
+// main plot
+const svgM=document.getElementById('main'),chips=document.getElementById('chips');
+const hideBox=document.getElementById('hide'),ghostBox=document.getElementById('ghost');
+let sel=null;
+const fullEst=dl(order.map(n=>study[n].y),order.map(n=>study[n].s));
+document.getElementById('estFull').textContent=fmt(fullEst);
+
+order.forEach(n=>{
+  const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.n=n;
+  b.innerHTML='<span class="n">團隊 '+n+'</span><span class="v">'+study[n].y.toFixed(1)+' kg</span>';
+  b.addEventListener('click',()=>pick(n));chips.appendChild(b);
+});
+
+function pick(n){sel=(sel===n)?null:n;render()}
+function readout(){
+  const r=document.getElementById('readout');
+  if(!sel){r.textContent='點圖上的點或上方團隊，查看該研究的效果與 95% 信賴區間。';return}
+  const d=study[sel],hidden=hideBox.checked&&d.ns;
+  r.innerHTML='<div class="who">團隊 '+d.n+'</div><span class="num">'+d.y.toFixed(1)+' kg</span>，標準誤 <span class="num">'+d.s.toFixed(2)+'</span><br>95% CI <span class="num">'+d.lo.toFixed(2)+' 至 '+d.hi.toFixed(2)+'</span>'+
+    (d.ns?'<br>信賴區間跨過 0：結果不明確'+(hidden?'，<b>這項研究沒有被發表</b>':''):'<br>信賴區間未跨過 0');
+}
+function render(){
+  const hide=hideBox.checked;ghostBox.disabled=!hide;if(!hide)ghostBox.checked=false;
+  const ghost=ghostBox.checked;
+  frame(svgM);
+  const shown=order.filter(n=>!(hide&&study[n].ns));
+  if(hide){
+    const pe=dl(shown.map(n=>study[n].y),shown.map(n=>study[n].s));
+    refLine(svgM,fullEst,'ref-full','原 '+fullEst.toFixed(2),'end');
+    refLine(svgM,pe,'ref-pub','已發表 '+pe.toFixed(2),'start');
+    document.getElementById('pubBox').hidden=false;
+    document.getElementById('estPub').textContent=fmt(pe);
+    document.getElementById('pubLab').textContent='剩下 '+shown.length+' 項重新計算';
+    document.getElementById('verdict').textContent='右移 '+(pe-fullEst).toFixed(2)+' kg，可能高估效益';
+  }else{
+    refLine(svgM,fullEst,'ref-full','合併效果 '+fullEst.toFixed(2),'start');
+    document.getElementById('pubBox').hidden=true;document.getElementById('verdict').textContent='';
+  }
+  order.forEach(n=>{
+    const d=study[n],gone=hide&&d.ns;
+    if(gone&&!ghost)return;
+    const g=el('g',{},svgM);
+    const c=el('circle',{cx:X(d.y),cy:Y(d.s),r:6.5,class:'pt'+(gone?' ghost':'')+(sel===n?' sel':''),tabindex:0,role:'button','aria-label':'團隊 '+n+' '+d.y+' 公斤'},g);
+    c.addEventListener('click',()=>pick(n));
+    c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(n)}});
+    const left=d.side==='L';
+    el('text',{x:X(d.y)+(left?-12:12),y:Y(d.s)+4,'text-anchor':left?'end':'start',class:'ptlab'+(gone?' ghost':'')},g,n);
+  });
+  chips.querySelectorAll('.chip').forEach(b=>{
+    const n=b.dataset.n;b.classList.toggle('gone',hide&&study[n].ns);b.classList.toggle('sel',sel===n);
+  });
+  readout();
+}
+hideBox.addEventListener('change',render);ghostBox.addEventListener('change',render);
+render();
+
+// scenario B: heterogeneity
+const B=[[2.63,.15,0],[3.23,.15,0],[2.43,.33,0],[3.43,.33,0],[4.18,.61,1],[5.05,.70,1],[4.55,.82,1],[5.38,.92,1],[3.76,1.06,1],[4.86,1.14,1]];
+const sB=frame(document.getElementById('sB'));
+B.forEach(([x,s,a])=>el('circle',{cx:X(x),cy:Y(s),r:6.5,class:'pt'+(a?' alt':'')},sB));
+
+// scenario C: symmetric but incomplete
+const Cp=[[2.83,.11],[3.04,.15],[2.67,.31],[3.15,.27],[2.54,.46],[3.31,.53],[2.40,.71],[3.46,.64],[2.15,.89],[3.60,.84],[2.31,1.10],[3.85,1.16]];
+const Cu=[[0.66,.65],[1.24,.74],[0.39,.90],[1.53,.85],[0.17,1.13],[1.04,1.06]];
+const pubC=dl(Cp.map(d=>d[0]),Cp.map(d=>d[1]));
+const allC=dl(Cp.concat(Cu).map(d=>d[0]),Cp.concat(Cu).map(d=>d[1]));
+function drawC(all){
+  const s=frame(document.getElementById('sC'));
+  refLine(s,pubC,'ref-full','已發表 '+pubC.toFixed(2),all?'start':'start');
+  if(all)refLine(s,allC,'ref-pub','全部 '+allC.toFixed(2),'end');
+  Cp.forEach(([x,y])=>el('circle',{cx:X(x),cy:Y(y),r:6.5,class:'pt'},s));
+  if(all)Cu.forEach(([x,y])=>el('circle',{cx:X(x),cy:Y(y),r:6.5,class:'pt alt'},s));
+  document.getElementById('cPub').setAttribute('aria-pressed',String(!all));
+  document.getElementById('cAll').setAttribute('aria-pressed',String(all));
+  document.getElementById('cText').innerHTML=all
+    ?'橘點是<b>存在但未發表</b>的研究。藍點的位置完全沒變，仍然大致對稱。'
+    :'只看已發表的藍點，圖形大致對稱，看不出缺了什麼。切換到「全部研究」看看。';
+  document.getElementById('cLab').textContent=all?'全部研究合併效果（含未發表）':'已發表研究合併效果';
+  document.getElementById('cEst').textContent=fmt(all?allC:pubC);
+}
+document.getElementById('cPub').addEventListener('click',()=>drawC(false));
+document.getElementById('cAll').addEventListener('click',()=>drawC(true));
+drawC(false);
+
+// quiz reveal
+[['q1','錯。所有研究都有發表，圖形仍然不對稱。'],['q2','錯。點位對稱，不等於研究完整。']].forEach(([id,msg])=>{
+  const q=document.getElementById(id);
+  q.querySelectorAll('.btns button').forEach(b=>b.addEventListener('click',()=>{
+    q.querySelectorAll('.btns button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    const ok=b.dataset.a==='f',fb=q.querySelector('.fb');
+    fb.className='fb '+(ok?'ok':'no');fb.textContent=(ok?'答對了。':'再想想。')+'答案是'+msg;
+    q.querySelector('.reveal').hidden=false;
+  }));
+});
+})();
+</script>
+</body>
+</html>
